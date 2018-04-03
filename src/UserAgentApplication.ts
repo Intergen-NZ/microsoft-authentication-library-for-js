@@ -1327,7 +1327,7 @@ export class UserAgentApplication {
     if (window.parent !== window && window.parent.callBackMappedToRenewStates[requestInfo.stateResponse]) {
         tokenReceivedCallback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
     }
-    else if (window.opener && window.opener.msal && window.opener.callBackMappedToRenewStates[requestInfo.stateResponse]) {
+    else if (isWindowOpenerMsal && window.opener && window.opener.msal && window.opener.callBackMappedToRenewStates[requestInfo.stateResponse]) {
         tokenReceivedCallback = window.opener.callBackMappedToRenewStates[requestInfo.stateResponse];
     }
     else {
