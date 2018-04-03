@@ -500,7 +500,7 @@ var UserAgentApplication = /** @class */ (function () {
         var accessTokenCacheItem = null;
         var scopes = authenticationRequest.scopes;
         var tokenCacheItems = this._cacheStorage.getAllAccessTokens(this.clientId, user.userIdentifier); //filter by clientId and user
-        if (tokenCacheItems.length === 0) {
+        if (tokenCacheItems.length === 0) { // No match found after initial filtering
             return null;
         }
         var filteredItems = [];
@@ -552,6 +552,7 @@ var UserAgentApplication = /** @class */ (function () {
             if (filteredItems.length === 0) {
                 return null;
             }
+            //only one cachedToken Found
             else if (filteredItems.length === 1) {
                 accessTokenCacheItem = filteredItems[0];
             }
@@ -1080,7 +1081,7 @@ var UserAgentApplication = /** @class */ (function () {
         if (window.parent !== window && window.parent.callBackMappedToRenewStates[requestInfo.stateResponse]) {
             tokenReceivedCallback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
         }
-        else if (window.opener && window.opener.msal && window.opener.callBackMappedToRenewStates[requestInfo.stateResponse]) {
+        else if (isWindowOpenerMsal && window.opener && window.opener.msal && window.opener.callBackMappedToRenewStates[requestInfo.stateResponse]) {
             tokenReceivedCallback = window.opener.callBackMappedToRenewStates[requestInfo.stateResponse];
         }
         else {
@@ -1347,12 +1348,12 @@ var UserAgentApplication = /** @class */ (function () {
                 tokenResponse.stateResponse = stateResponse;
                 // async calls can fire iframe and login request at the same time if developer does not use the API as expected
                 // incoming callback needs to be looked up to find the request type
-                if (stateResponse === this._cacheStorage.getItem(Constants.stateLogin)) {
+                if (stateResponse === this._cacheStorage.getItem(Constants.stateLogin)) { // loginRedirect
                     tokenResponse.requestType = Constants.login;
                     tokenResponse.stateMatch = true;
                     return tokenResponse;
                 }
-                else if (stateResponse === this._cacheStorage.getItem(Constants.stateAcquireToken)) {
+                else if (stateResponse === this._cacheStorage.getItem(Constants.stateAcquireToken)) { //acquireTokenRedirect
                     tokenResponse.requestType = Constants.renewToken;
                     tokenResponse.stateMatch = true;
                     return tokenResponse;
